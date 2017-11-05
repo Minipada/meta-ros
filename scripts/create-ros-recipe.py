@@ -177,10 +177,19 @@ class yocto_recipe:
         print self.author
         print self.license
         print self.build_dependencies
+        print self.run_dependencies
 
     def parse_build_dependencies(self):
-        build_dependencies = ''.join(['DEPENDS = \"',' '.join(self.build_dependencies), "\"", "\n"])
-        return build_dependencies
+        if self.build_dependencies:
+            build_dependencies = ''.join(['DEPENDS = \"',' '.join(self.build_dependencies), "\"", "\n"])
+            return build_dependencies
+        return ""
+
+    def parse_run_dependencies(self):
+        if self.run_dependencies:
+            run_dependencies = ''.join(['RDEPENDS_${PN} = \"',' '.join(self.run_dependencies), "\"", "\n"])
+            return run_dependencies
+        return ""
 
     def download_archive(self):
         urllib.urlretrieve(self.get_URL(), self.getArchiveName())
@@ -216,6 +225,7 @@ class yocto_recipe:
         f.write('\n')
 
         f.write(self.parse_build_dependencies() + "\n")
+        f.write(self.parse_run_dependencies() + "\n")
         f.write(
             ''.join([
                 "SRC_URI = ", "\"https://github.com/", self.repository,
